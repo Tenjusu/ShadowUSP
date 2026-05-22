@@ -1,67 +1,76 @@
 import { useMemo, useState } from "react";
 import Header from "./components/Header";
-import TradeCard from "./components/TradeCard";
-import localSenateTrades from "./senate_trades.json";
-
-const TRUMP_NAMES = [
-  "Vance",
-  "Rubio",
-  "Tuberville",
-  "Johnson",
-  "Greene",
-  "Boebert",
-  "Crenshaw",
-  "Jordan",
-  "Cruz",
-  "Paul",
-  "Gaetz",
-  "Scott",
-  "Nunes",
-  "Collins",
-  "Hagerty",
-  "Lankford",
-  "Hawley",
-  "Cotton",
-  "Blackburn",
-  "Lummis",
-  "Mullin",
-  "Moran",
-  "Hyde-Smith",
-  "Capito",
-  "Sullivan",
-];
+import PoliticianCard from "./components/PoliticianCard";
+import PortfolioDetail from "./components/PortfolioDetail";
+import politicians from "./portfolioData.json";
 
 export default function App() {
-  const [trades] = useState(localSenateTrades || []);
-  const [filterMode, setFilterMode] = useState("all");
+  const [selectedPoliticianId, setSelectedPoliticianId] = useState(null);
+  const [theme, setTheme] = useState("dark");
 
-  const filteredTrades = useMemo(() => {
-    if (filterMode === "trump") {
-      return trades.filter((trade) =>
-        TRUMP_NAMES.some((name) =>
-          (trade.politician || "").toLowerCase().includes(name.toLowerCase()),
-        ),
-      );
-    }
+  const selectedPolitician = useMemo(
+    () =>
+      politicians.find((politician) => politician.id === selectedPoliticianId) ??
+      null,
+    [selectedPoliticianId],
+  );
 
-    return trades;
-  }, [filterMode, trades]);
+  const isDark = theme === "dark";
 
   return (
-    <div className="min-h-screen bg-black font-sans text-white antialiased">
-      <Header filterMode={filterMode} onFilterModeChange={setFilterMode} />
+    <div
+      className={`min-h-screen font-sans antialiased transition-colors duration-300 ${
+        isDark ? "bg-black text-white" : "bg-[#f5f7fa] text-[#111827]"
+      }`}
+    >
+      <Header
+        isDark={isDark}
+        theme={theme}
+        onThemeChange={setTheme}
+        selectedPolitician={selectedPolitician}
+        onBack={() => setSelectedPoliticianId(null)}
+      />
 
-      <main className="mx-auto max-w-[900px] px-6 py-8">
-        <div className="mb-6 rounded-xl border border-[#0a84ff]/30 bg-[#0a84ff]/10 px-[18px] py-3.5 text-sm text-[#0a84ff]">
-          Connected to local Python scraper. Showing {filteredTrades.length}{" "}
-          recent filings.
-        </div>
+      <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+        {selectedPolitician ? (
+          <PortfolioDetail politician={selectedPolitician} isDark={isDark} />
+        ) : (
+          <section>
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p
+                  className={`text-sm font-semibold uppercase tracking-[0.18em] ${
+                    isDark ? "text-emerald-300" : "text-emerald-600"
+                  }`}
+                >
+                  Portfolio intelligence
+                </p>
+                <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Political portfolios
+                </h1>
+              </div>
+              <p
+                className={`max-w-2xl text-sm leading-6 ${
+                  isDark ? "text-zinc-400" : "text-slate-500"
+                }`}
+              >
+                Tap a profile to inspect performance, risk, holdings, and
+                recent trading activity without leaving the dashboard.
+              </p>
+            </div>
 
-        <div className="flex flex-col gap-3">
-          {filteredTrades.map((trade, index) => (
-            <TradeCard key={`${trade.report_url}-${index}`} trade={trade} />
-          ))}
-        </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {politicians.map((politician) => (
+                <PoliticianCard
+                  key={politician.id}
+                  politician={politician}
+                  isDark={isDark}
+                  onClick={() => setSelectedPoliticianId(politician.id)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );
