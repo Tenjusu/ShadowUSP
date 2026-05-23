@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AreaChart from "./AreaChart";
 
 const timeframes = ["1D", "1W", "1M", "YTD", "All-Time"];
 
@@ -7,6 +8,8 @@ export default function PortfolioDetail({ politician, isDark }) {
 
   const panel = isDark ? "bg-[#111]" : "bg-[#f4f4f4]";
   const nested = isDark ? "bg-black" : "bg-white";
+  const chartPoints =
+    politician.chart?.[timeframe] ?? politician.chart?.YTD ?? [10, 20, 18, 28];
 
   return (
     <section className="animate-[fadeIn_240ms_ease-out] space-y-6">
@@ -34,6 +37,30 @@ export default function PortfolioDetail({ politician, isDark }) {
             <p className="mt-4 text-xl font-black">
               {politician.totalValue} estimated value
             </p>
+          </div>
+        </div>
+
+        <div className={`mt-8 overflow-hidden rounded-[2.25rem] p-5 ${nested}`}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-lg font-black text-zinc-500">
+                Portfolio value chart
+              </p>
+              <h2 className="mt-2 text-4xl font-black tracking-tight sm:text-6xl">
+                Money over time
+              </h2>
+            </div>
+            <p className="text-2xl font-black text-emerald-500">
+              {politician.performance[timeframe]}
+            </p>
+          </div>
+          <div className="mt-8">
+            <AreaChart
+              id={`${politician.id}-${timeframe}`}
+              points={chartPoints}
+              heightClass="h-[280px] sm:h-[360px]"
+              stroke="#34d399"
+            />
           </div>
         </div>
 
