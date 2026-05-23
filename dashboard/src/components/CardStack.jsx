@@ -53,13 +53,14 @@ export default function CardStack({ politicians, isDark, onSelect }) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="no-scrollbar flex cursor-grab touch-pan-x gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-8 pt-2 active:cursor-grabbing"
+      className="no-scrollbar flex snap-x snap-mandatory cursor-grab touch-pan-x gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-8 pt-2 active:cursor-grabbing"
     >
       {politicians.map((politician, index) => (
         <div
           key={politician.id}
-          className="min-w-[82vw] scroll-ml-4 snap-center sm:min-w-[420px] lg:min-w-[460px]"
-          style={{ transform: `translateY(${index % 2 === 0 ? 0 : 24}px)` }}
+          className={`min-w-[82vw] scroll-ml-4 snap-center sm:min-w-[420px] lg:min-w-[460px] ${
+            index % 2 === 0 ? "translate-y-0" : "translate-y-6"
+          }`}
         >
           <PoliticianCard
             politician={politician}
