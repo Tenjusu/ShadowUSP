@@ -1,12 +1,42 @@
 import { useMemo, useState } from "react";
+import CardStack from "./components/CardStack";
+import FilterRow from "./components/FilterRow";
 import Header from "./components/Header";
-import PoliticianCard from "./components/PoliticianCard";
+import MarketOverview from "./components/MarketOverview";
 import PortfolioDetail from "./components/PortfolioDetail";
-import politicians from "./portfolioData.json";
+import politicians from "./senate_trades.json";
+
+const filters = [
+  { label: "All", value: "all" },
+  { label: "Senate", value: "senate" },
+  { label: "House", value: "house" },
+  { label: "Democrat", value: "democrat" },
+  { label: "Republican", value: "republican" },
+  { label: "Tech Giants", value: "tech" },
+];
 
 export default function App() {
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(null);
   const [theme, setTheme] = useState("dark");
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const isDark = theme === "dark";
+
+  const filteredPoliticians = useMemo(() => {
+    if (activeFilter === "all") return politicians;
+
+    return politicians.filter((politician) => {
+      const party = politician.party.toLowerCase();
+      const chamber = politician.chamber.toLowerCase();
+      const tags = politician.tags.map((tag) => tag.toLowerCase());
+
+      return (
+        party === activeFilter ||
+        chamber === activeFilter ||
+        tags.includes(activeFilter)
+      );
+    });
+  }, [activeFilter]);
 
   const selectedPolitician = useMemo(
     () =>
@@ -15,12 +45,10 @@ export default function App() {
     [selectedPoliticianId],
   );
 
-  const isDark = theme === "dark";
-
   return (
     <div
-      className={`min-h-screen font-sans antialiased transition-colors duration-300 ${
-        isDark ? "bg-black text-white" : "bg-[#f5f7fa] text-[#111827]"
+      className={`min-h-screen overflow-hidden font-sans antialiased transition-colors duration-300 ${
+        isDark ? "bg-black text-white" : "bg-white text-black"
       }`}
     >
       <Header
@@ -31,45 +59,36 @@ export default function App() {
         onBack={() => setSelectedPoliticianId(null)}
       />
 
-      <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-12 pt-4 sm:px-7 lg:px-10">
         {selectedPolitician ? (
           <PortfolioDetail politician={selectedPolitician} isDark={isDark} />
         ) : (
-          <section>
-            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p
-                  className={`text-sm font-semibold uppercase tracking-[0.18em] ${
-                    isDark ? "text-emerald-300" : "text-emerald-600"
-                  }`}
-                >
-                  Portfolio intelligence
-                </p>
-                <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+          <>
+            <MarketOverview isDark={isDark} />
+            <FilterRow
+              filters={filters}
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+              isDark={isDark}
+            />
+
+            <section className="space-y-5">
+              <div className="flex flex-col gap-2">
+                <p className="text-base font-black uppercase tracking-[0.2em] text-emerald-500">
                   Political portfolios
+                </p>
+                <h1 className="max-w-4xl text-5xl font-black leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl">
+                  Swipe the money.
                 </h1>
               </div>
-              <p
-                className={`max-w-2xl text-sm leading-6 ${
-                  isDark ? "text-zinc-400" : "text-slate-500"
-                }`}
-              >
-                Tap a profile to inspect performance, risk, holdings, and
-                recent trading activity without leaving the dashboard.
-              </p>
-            </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {politicians.map((politician) => (
-                <PoliticianCard
-                  key={politician.id}
-                  politician={politician}
-                  isDark={isDark}
-                  onClick={() => setSelectedPoliticianId(politician.id)}
-                />
-              ))}
-            </div>
-          </section>
+              <CardStack
+                politicians={filteredPoliticians}
+                isDark={isDark}
+                onSelect={setSelectedPoliticianId}
+              />
+            </section>
+          </>
         )}
       </main>
     </div>
