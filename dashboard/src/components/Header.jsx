@@ -25,13 +25,16 @@ export default function Header({
                 isDark ? "bg-white text-black" : "bg-black text-white"
               }`}
             >
-              <span aria-hidden="true">←</span>
+              <span aria-hidden="true">&lt;</span>
             </button>
           )}
 
           <div>
+            <p className="text-4xl font-black leading-none tracking-tight text-emerald-400 sm:text-5xl">
+              ShadowUSP
+            </p>
             <p
-              className={`text-lg font-black leading-none ${
+              className={`mt-4 text-lg font-black leading-none ${
                 isDark ? "text-white" : "text-black"
               }`}
             >
