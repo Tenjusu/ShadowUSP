@@ -74,11 +74,8 @@ export default function App() {
 
             <section className="space-y-5">
               <div className="flex flex-col gap-2">
-                <p className="text-base font-black uppercase tracking-[0.2em] text-emerald-500">
+                <h1 className="text-5xl font-black leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl">
                   Political portfolios
-                </p>
-                <h1 className="max-w-4xl text-5xl font-black leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl">
-                  Swipe the money.
                 </h1>
               </div>
 
